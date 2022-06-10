@@ -3,6 +3,41 @@ SYSINFO=$(uname -a)
 PKG="optimus-manager"
 APICALL=$(curl -s "https://aur.archlinux.org/rpc/?v=5&type=info&arg[]=$PKG")
 TESTAP=$(curl -s "https://aur.archlinux.org/rpc/?v=5&type=info&arg[]=optimus-manager")
+IP_TO_CHECK=8.8.8.8
+IP2_TO_CHECK=4.4.4.4
+
+
+function CheckNetworkI() 
+{
+
+    local N_CHECK_PASSED=0
+
+    ping -W 1 -c 1 $IP_TO_CHECK > /dev/null&
+    $PID1IP = $!
+
+    ping -W 1 -c 1 $IP2_TO_CHECK > /dev/null&
+    $PID2IP = $!
+
+    if wait $PID1IP then
+        echo "${IP_TO_CHECK} check passed, you're online"
+        # N_CHECK_PASSED=1
+    fi
+
+    if wait $PID2IP then
+        echo "${IP2_TO_CHECK} check passed, you're online"
+        N_CHECK_PASSED=1
+    fi
+
+    if [ N_CHECK_PASSED -eq 0 ]; then
+        echo "You are offline!"
+    fi
+
+
+}
+
+CheckNetworkI
+
+
 # PKG="chromium"
 
 
@@ -40,7 +75,6 @@ function CheckNetwork()
 
     if [ $? -eq 0 ]; then
         CheckPackageUpdate
-        echo "You are Online"
     else
         echo "You are offline, check for $PKG updates will be skipped..."
     fi

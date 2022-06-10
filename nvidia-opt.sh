@@ -6,6 +6,7 @@ TESTAP=$(curl -s "https://aur.archlinux.org/rpc/?v=5&type=info&arg[]=optimus-man
 # PKG="chromium"
 
 
+
 function ChooseGPU()
 {
     echo "What GPU you wanna use?"
@@ -33,10 +34,22 @@ function CheckPackageUpdate()
     
 }
 
+function CheckNetwork()
+{
+    wget -q --spider https://www.google.com
+
+    if [ $? -eq 0 ]; then
+        CheckPackageUpdate
+        echo "You are Online"
+    else
+        echo "You are offline, check for $PKG updates will be skipped..."
+    fi
+}
+
 function CheckPackageInstalled() # Check out if package is installed
 {
     if pacman -Qi $PKG &>/dev/null; then
-        CheckPackageUpdate
+        CheckNetwork
         ChooseGPU
     else
         while true; do

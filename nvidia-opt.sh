@@ -7,32 +7,19 @@ IP_TO_CHECK=8.8.8.8
 IP2_TO_CHECK=4.4.4.4
 
 
-function CheckNetworkI() 
+function CheckNetworkI()
 {
-
-    local N_CHECK_PASSED=0
-
-    ping -W 1 -c 1 $IP_TO_CHECK > /dev/null&
-    $PID1IP = $!
-
-    ping -W 1 -c 1 $IP2_TO_CHECK > /dev/null&
-    $PID2IP = $!
-
-    if wait $PID1IP then
-        echo "${IP_TO_CHECK} check passed, you're online"
-        # N_CHECK_PASSED=1
+    
+    
+    echo -e "GET http://google.com HTTP/1.0\n\n" | nc google.com 80 > /dev/null 2>&1
+    
+    if [ $? -eq 0 ]; then
+        echo "Online"
+    else
+        echo "Offline"
     fi
-
-    if wait $PID2IP then
-        echo "${IP2_TO_CHECK} check passed, you're online"
-        N_CHECK_PASSED=1
-    fi
-
-    if [ N_CHECK_PASSED -eq 0 ]; then
-        echo "You are offline!"
-    fi
-
-
+    
+    
 }
 
 CheckNetworkI
@@ -60,7 +47,7 @@ function CheckPackageUpdate()
     CURRENT_PKG_VERSION=$(pacman -Q $PKG)
     echo "$CURRENT_PKG_VERSION"
     echo "$LATEST_PKG_VERSION"
-
+    
     if [ "$CURRENT_PKG_VERSION" == "$PKG $LATEST_PKG_VERSION" ]; then
         echo "You version of $PKG seems to be updated! ($LATEST_PKG_VERSION)"
     else
@@ -72,7 +59,7 @@ function CheckPackageUpdate()
 function CheckNetwork()
 {
     wget -q --spider https://www.google.com
-
+    
     if [ $? -eq 0 ]; then
         CheckPackageUpdate
     else
